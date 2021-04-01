@@ -108,11 +108,13 @@ const Search = styled.div`
   display: flex;
   padding: 15px;
 `;
+
 const SearchInput = styled.input`
   width: 100%;
   outline-width: 0;
   border: none;
   margin-left: 10px;
+  border-bottom: solid 1px gray;
 `;
 
 const Newchat = styled(Button)`

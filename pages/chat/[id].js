@@ -12,7 +12,7 @@ const ChatLayout = ({ messages, chat }) => {
   return (
     <Container>
       <Head>
-        <title>Chat with {getRecipientEmail(chat.users, user)}</title>
+        <title>Whatsapp-Clone</title>
       </Head>
       <Sidebar />
       <ChatContainer>

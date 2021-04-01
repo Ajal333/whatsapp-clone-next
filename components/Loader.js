@@ -13,7 +13,7 @@ const Loader = () => {
     >
       <img
         height="200px"
-        src="https://res.cloudinary.com/mozilla-foundation/image/upload/c_fit,f_auto,q_70,w_736/v1587570879/foundationsite/buyersguide/whatsapp_m0bge5.jpg"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/598px-WhatsApp.svg.png"
         style={{ marginBottom: 15 }}
       />
       <Circle size={50} color="#55C657" />
