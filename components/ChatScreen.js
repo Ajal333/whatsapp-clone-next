@@ -11,9 +11,13 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase";
 import { useRouter } from "next/router";
 import Message from "./Message";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import firebase from "firebase";
+import getRecipientEmail from "../utils/getRecipentEmail";
+import TimeAgo from "timeago-react";
 
-const ChatScreen = () => {
+const ChatScreen = ({ messages, chat }) => {
+  const endOfMessagesRef = useRef(null);
   const [input, setInput] = useState("");
   const [user] = useAuthState(auth);
   const router = useRouter();
@@ -23,6 +27,11 @@ const ChatScreen = () => {
       .doc(router.query.id)
       .collection("messages")
       .orderBy("timestamp", "asc")
+  );
+  const [recipientSnapshot] = useCollection(
+    db
+      .collection("users")
+      .where("email", "==", getRecipientEmail(chat.users, user))
   );
 
   const showMessages = () => {
@@ -37,18 +46,67 @@ const ChatScreen = () => {
           }}
         />
       ));
+    } else {
+      return JSON.parse(messages).map((message) => (
+        <Message key={message.id} user={message.user} messages={message} />
+      ));
     }
   };
 
-  const sendMessage = () => {};
+  const scrollToBottom = () => {
+    endOfMessagesRef.current.scrollIntoView({
+      behaviour: "smooth",
+      block: "start",
+    });
+  };
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+
+    db.collection("users").doc(user.uid).set(
+      {
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    db.collection("chats").doc(router.query.id).collection("messages").add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      user: user.email,
+      message: input,
+      photoURL: user.photoURL,
+    });
+
+    setInput("");
+    scrollToBottom();
+  };
+
+  const recipient = recipientSnapshot?.docs?.[0]?.data();
+
+  const recipientEmail = getRecipientEmail(chat.users, user);
 
   return (
     <Container>
       <ChatHeader>
-        <Avatar />
+        {recipient ? (
+          <Avatar src={recipient?.photoURL} />
+        ) : (
+          <Avatar>{recipientEmail[0]}</Avatar>
+        )}
         <HeaderInfo>
-          <h3>The email</h3>
-          <p>Last seeeeeeeeeeen</p>
+          <h3>{recipientEmail}</h3>
+          {recipientSnapshot ? (
+            <p>
+              Last seen:{" "}
+              {recipient?.lastSeen?.toDate() ? (
+                <TimeAgo datetime={recipient?.lastSeen?.toDate()} />
+              ) : (
+                "Unavailable"
+              )}
+            </p>
+          ) : (
+            <p>Loading last seen...</p>
+          )}
         </HeaderInfo>
         <HeaderIcons>
           <IconButton>
@@ -61,14 +119,14 @@ const ChatScreen = () => {
       </ChatHeader>
       <MessageContainer>
         {showMessages()}
-        <EndofMessages />
+        <EndofMessages ref={endOfMessagesRef} />
       </MessageContainer>
       <InputContainer>
         <IconButton>
           <InsertEmoticon />
         </IconButton>
         <Input value={input} onChange={(e) => setInput(e.target.value)} />
-        <button hidden disabled={!input} onClick={sendMessage}>
+        <button hidden disabled={!input} type="submit" onClick={sendMessage}>
           Send Message
         </button>
         <IconButton>
@@ -134,8 +192,21 @@ const Input = styled.input`
   margin: 0 15px;
 `;
 
-const MessageContainer = styled.div``;
+const MessageContainer = styled.div`
+  padding: 30px;
+  background-color: #e5ded8;
+  min-height: 90vh;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+`;
 
 const HeaderIcons = styled.div``;
 
-const EndofMessages = styled.div``;
+const EndofMessages = styled.div`
+  margin-bottom: 50px;
+`;

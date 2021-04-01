@@ -67,7 +67,7 @@ const Container = styled.div`
   background: white;
   height: 100vh;
   flex: 0.45;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   min-width: 300px;
   max-width: 350px;
   border-right: solid 1px whitesmoke;
@@ -86,9 +86,10 @@ const IconContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1;
+  z-index: 100;
   border-bottom: 1px solid whitesmoke;
   height: 80px;
+  background-color: white;
 `;
 
 const Icons = styled.div``;

@@ -16,7 +16,7 @@ const ChatLayout = ({ messages, chat }) => {
       </Head>
       <Sidebar />
       <ChatContainer>
-        <ChatScreen />
+        <ChatScreen {...{ messages, chat }} />
       </ChatContainer>
     </Container>
   );
@@ -48,8 +48,6 @@ export async function getServerSideProps(context) {
     id: chatRef.id,
     ...chatRef.data(),
   };
-
-  console.log(messages, chat);
 
   return {
     props: {
