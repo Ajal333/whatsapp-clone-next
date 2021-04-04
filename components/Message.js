@@ -51,6 +51,6 @@ const TimeStamp = styled.p`
   font-size: 11px;
   text-align: right;
   margin: 0;
-  margin-top: 5px;
+  margin-top: 5px;              
   color: gray;
 `;

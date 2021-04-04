@@ -6,9 +6,11 @@ import * as EmailValidator from "email-validator";
 import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
+import { useState } from "react";
 
 const Sidebar = () => {
   const [user] = useAuthState(auth);
+  const [sidebar, hideSidebar] = useState(false);
   const chatRef = db
     .collection("chats")
     .where("users", "array-contains", user.email);
@@ -39,7 +41,7 @@ const Sidebar = () => {
     );
 
   return (
-    <Container>
+    <Container                                                                                      >
       <IconContainer>
         <UserAvatar onClick={() => auth.signOut()} src={user?.photoURL} />
         <Icons>
@@ -47,7 +49,7 @@ const Sidebar = () => {
             <Chat />
           </IconButton>
           <IconButton>
-            <MoreVert />
+            <MoreVert onClick={() => hideSidebar(!sidebar)} />
           </IconButton>
         </Icons>
       </IconContainer>
